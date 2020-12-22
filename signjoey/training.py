@@ -966,6 +966,9 @@ class TrainManager:
             for seq, hyp in zip(sequence_ids, hypotheses):
                 opened_file.write("{}|{}\n".format(seq, hyp))
 
+def train_fn(cfg_file: str, cfg_dict: dict=None) -> None:
+    return train(cfg_file, cfg_dict)
+
 def train(cfg_file: str, cfg_dict: dict=None) -> None:
     """
     Main training function. After training, also test on test data if given.
