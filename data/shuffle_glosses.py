@@ -2,7 +2,7 @@ import pickle
 import gzip
 import random
 
-file = 'data/phoenix14t.pami0.train.annotations_only'
+file = 'data/phoenix14t.pami0.test.annotations_only'
 
 def load_dataset_file(filename):
     with gzip.open(filename, "rb") as f:
@@ -21,6 +21,7 @@ for s in tmp:
     random.shuffle(glosses)
     glosses = ' '.join(glosses)
     print(glosses)
+    s['gloss'] = glosses
     samples.append({k: v for k, v in s.items() if k != 'sign'})
 
 file = gzip.GzipFile(f'{file}.shuffled_glosses', 'wb')
