@@ -8,7 +8,7 @@ import gzip
 # a list [{'name': ..., 'text': ..., 'gloss': ..., 'signer': ...}]
 # where the 'sign' attribute (the embedding) has been removed.
 
-file = 'data/phoenix14t.pami0.dev'
+file = 'data/phoenix14t.pami0.train'
 
 def load_dataset_file(filename):
     with gzip.open(filename, "rb") as f:
@@ -25,7 +25,8 @@ print('Reading file...')
 for s in tmp:
     samples.append({k: v for k, v in s.items() if k != 'sign'})
 
-with open(f'{file}.annotations_only', 'wb') as output:
-    pickle.dump(samples, output, pickle.HIGHEST_PROTOCOL)
+file = gzip.GzipFile(f'{file}.annotations_only', 'wb')
+file.write(pickle.dumps(samples, protocol=3))
+file.close()
 
 print('Successfully wrote new file')
