@@ -372,7 +372,7 @@ class TrainManager:
                 processed_txt_tokens = self.total_txt_tokens
                 epoch_translation_loss = 0
 
-            for batch in iter(train_iter):
+            for batch_no, batch in enumerate(iter(train_iter)):
                 # reactivate training
                 # create a Batch object from torchtext batch
                 batch = Batch(
@@ -396,7 +396,7 @@ class TrainManager:
                     batch, update=update
                 )
 
-                print(recognition_loss, translation_loss)
+                print(f'Epoch {epoch_no} batch {batch_no} recog loss {recognition_loss.item():.4f} transl loss {translation_loss.item():.4f}')
 
                 if self.do_recognition:
                     self.tb_writer.add_scalar(

@@ -111,8 +111,11 @@ def load_data(data_cfg: dict) -> (Dataset, Dataset, Dataset, Vocabulary, Vocabul
     def stack_features(features, something):
         return torch.stack([torch.stack(ft, dim=0) for ft in features], dim=0)
 
-    sequence_field = data.RawField(is_target=False)
-    signer_field = data.RawField(is_target=False)
+    sequence_field = data.RawField()
+    signer_field = data.RawField()
+
+    sequence_field.is_target = False
+    signer_field.is_target = False
 
     sgn_field = data.Field(
         use_vocab=False,
