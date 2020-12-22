@@ -965,13 +965,16 @@ class TrainManager:
                 opened_file.write("{}|{}\n".format(seq, hyp))
 
 
-def train(cfg_file: str) -> None:
+def train(cfg_file: str, model_dir: str=None) -> None:
     """
     Main training function. After training, also test on test data if given.
 
     :param cfg_file: path to configuration yaml file
     """
     cfg = load_config(cfg_file)
+
+    if model_dir is not None:
+        cfg["training"]["model_dir"] = model_dir
 
     # set the random seed
     set_seed(seed=cfg["training"].get("random_seed", 42))
@@ -1046,6 +1049,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--gpu_id", type=str, default="0", help="gpu to run your job on"
     )
+    parser.add_argument(
+        "--model_dir", type=str, default="./sign_sample_model", help="where to save model and logs - overrides config"
+    )
     args = parser.parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
-    train(cfg_file=args.config)
+    train(cfg_file=args.config, model_dir=args.model_dir)
