@@ -11,20 +11,8 @@ import torch
 
 
 def load_dataset_file(filename):
-
-    is_gzip = False
-
-    with open(filename, 'rb') as f:
-        if f.read(2) == b'\x1f\x8b':
-            is_gzip = True
-
-    with open(filename, 'rb') as f:
-        if is_gzip:
-            loaded_object = pickle.load(gzip.open(f))
-            return loaded_object
-        else:
-            loaded_object = pickle.load(f)
-            return loaded_object
+    
+    print('Loading', filename)
 
     with gzip.open(filename, 'rb') as f:
         loaded_object = pickle.load(f)
