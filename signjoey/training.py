@@ -966,14 +966,6 @@ class TrainManager:
             for seq, hyp in zip(sequence_ids, hypotheses):
                 opened_file.write("{}|{}\n".format(seq, hyp))
 
-def update_dict(d, u):
-    for k, v in u.items():
-        if isinstance(v, collections.abc.Mapping):
-            d[k] = update_dict(d.get(k, {}), v)
-        else:
-            d[k] = v
-    return d
-
 def train(cfg_file: str, cfg_dict: dict=None) -> None:
     """
     Main training function. After training, also test on test data if given.
@@ -982,6 +974,14 @@ def train(cfg_file: str, cfg_dict: dict=None) -> None:
     :param cfg_dict: path to configuration dict, overrides values in cfg_file
     """
     cfg = load_config(cfg_file)
+
+    def update_dict(d, u):
+        for k, v in u.items():
+            if isinstance(v, collections.abc.Mapping):
+                d[k] = update_dict(d.get(k, {}), v)
+            else:
+                d[k] = v
+        return d
 
     if cfg_dict is not None:
         cfg = update_dict(cfg, cfg_dict)
