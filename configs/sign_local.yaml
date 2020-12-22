@@ -1,23 +1,19 @@
 name: sign_experiment
 data:
-    #data_path: ./base_annotations/
     data_path: ./data/
     version: phoenix_2014_trans
     sgn: sign
     txt: text
     gls: gloss
-    #train: phoenix14t.train
-    #dev: phoenix14t.dev
-    #test: phoenix14t.test
-    #train: phoenix14t.pami0.dev.dontsync
+    #train: phoenix14t.pami0.train.dontsync
     #dev: phoenix14t.pami0.dev.dontsync
-    #test: phoenix14t.pami0.dev.dontsync
-    embeddings_train: phoenix14t.pami0.dev.dontsync
+    #test: phoenix14t.pami0.test.dontsync
+    embeddings_train: phoenix14t.pami0.train.dontsync
     embeddings_dev: phoenix14t.pami0.dev.dontsync
-    embeddings_test: phoenix14t.pami0.dev.dontsync
-    annotations_train: phoenix14t.pami0.dev.annotations_only
+    embeddings_test: phoenix14t.pami0.test.dontsync
+    annotations_train: phoenix14t.pami0.train.annotations_only
     annotations_dev: phoenix14t.pami0.dev.annotations_only
-    annotations_test: phoenix14t.pami0.dev.annotations_only
+    annotations_test: phoenix14t.pami0.test.annotations_only
     feature_size: 1024
     level: word
     txt_lowercase: true
