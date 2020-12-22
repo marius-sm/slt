@@ -396,7 +396,7 @@ class TrainManager:
                     batch, update=update
                 )
 
-                print(f'Epoch {epoch_no} batch {batch_no} recog loss {recognition_loss.item():.4f} transl loss {translation_loss.item():.4f}')
+                # print(f'Epoch {epoch_no} batch {batch_no} recog loss {recognition_loss.item():.4f} transl loss {translation_loss.item():.4f}')
 
                 if self.do_recognition:
                     self.tb_writer.add_scalar(
