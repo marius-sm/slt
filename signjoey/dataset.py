@@ -51,6 +51,8 @@ class SignTranslationDataset(data.Dataset):
 
         Arguments:
             path: Common prefix of paths to the data files for both languages.
+            embeddings_path: If path is None, file from which to get the embeddings
+            annotations_path: If path is None, file from which to get the annotations
             exts: A tuple containing the extension to path for each language.
             fields: A tuple containing the fields that will be used for data
                 in each language.
