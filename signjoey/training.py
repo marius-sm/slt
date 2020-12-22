@@ -396,6 +396,8 @@ class TrainManager:
                     batch, update=update
                 )
 
+                print(recognition_loss, translation_loss)
+
                 if self.do_recognition:
                     self.tb_writer.add_scalar(
                         "train/train_recognition_loss", recognition_loss, self.steps
