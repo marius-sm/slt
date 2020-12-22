@@ -966,7 +966,7 @@ class TrainManager:
             for seq, hyp in zip(sequence_ids, hypotheses):
                 opened_file.write("{}|{}\n".format(seq, hyp))
 
-def train(cfg_file: str, cfg_dict: dict=None) -> None:
+def train_fn(cfg_file: str, cfg_dict: dict=None) -> None:
     """
     Main training function. After training, also test on test data if given.
 
@@ -1063,4 +1063,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
-    train(cfg_file=args.config, cfg_dict=None)
+    train_fn(cfg_file=args.config, cfg_dict=None)
