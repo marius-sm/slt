@@ -9,15 +9,12 @@ data:
     #train: phoenix14t.train
     #dev: phoenix14t.dev
     #test: phoenix14t.test
-    #train: phoenix14t.pami0.dev.dontsync
-    #dev: phoenix14t.pami0.dev.dontsync
-    #test: phoenix14t.pami0.dev.dontsync
-    embeddings_train: phoenix14t.pami0.dev
+    embeddings_train: phoenix14t.pami0.train
     embeddings_dev: phoenix14t.pami0.dev
-    embeddings_test: phoenix14t.pami0.dev
-    annotations_train: phoenix14t.pami0.dev.annotations_only
+    embeddings_test: phoenix14t.pami0.test
+    annotations_train: phoenix14t.pami0.train.annotations_only
     annotations_dev: phoenix14t.pami0.dev.annotations_only
-    annotations_test: phoenix14t.pami0.dev.annotations_only
+    annotations_test: phoenix14t.pami0.test.annotations_only
     feature_size: 1024
     level: word
     txt_lowercase: true
