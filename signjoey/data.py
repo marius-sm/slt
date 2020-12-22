@@ -49,26 +49,7 @@ def load_data(data_cfg: dict) -> (Dataset, Dataset, Dataset, Vocabulary, Vocabul
 
     data_path = data_cfg.get("data_path", "./data")
 
-    if "train" in data_cfg.keys():
-        if isinstance(data_cfg["train"], list):
-            train_paths = [os.path.join(data_path, x) for x in data_cfg["train"]]
-            dev_paths = [os.path.join(data_path, x) for x in data_cfg["dev"]]
-            test_paths = [os.path.join(data_path, x) for x in data_cfg["test"]]
-            pad_feature_size = sum(data_cfg["feature_size"])
-
-        else:
-            train_paths = os.path.join(data_path, data_cfg["train"])
-            dev_paths = os.path.join(data_path, data_cfg["dev"])
-            test_paths = os.path.join(data_path, data_cfg["test"])
-            pad_feature_size = data_cfg["feature_size"]
-        embeddings_train_paths = None
-        embeddings_test_paths = None
-        embeddings_dev_paths = None
-        annotations_train_paths = None
-        annotations_test_paths = None
-        annotations_dev_paths = None
-    else:
-        assert "embeddings_train" in data_cfg.keys()
+    if "embeddings_train" in data_cfg.keys():
         assert "annotations_train" in data_cfg.keys()
         if isinstance(data_cfg["embeddings_train"], list):
             embeddings_train_paths = [os.path.join(data_path, x) for x in data_cfg["embeddings_train"]]
@@ -91,7 +72,25 @@ def load_data(data_cfg: dict) -> (Dataset, Dataset, Dataset, Vocabulary, Vocabul
         test_paths = None
         dev_paths = None
 
-    print(embeddings_train_paths)
+    else:
+        if isinstance(data_cfg["train"], list):
+            train_paths = [os.path.join(data_path, x) for x in data_cfg["train"]]
+            dev_paths = [os.path.join(data_path, x) for x in data_cfg["dev"]]
+            test_paths = [os.path.join(data_path, x) for x in data_cfg["test"]]
+            pad_feature_size = sum(data_cfg["feature_size"])
+
+        else:
+            train_paths = os.path.join(data_path, data_cfg["train"])
+            dev_paths = os.path.join(data_path, data_cfg["dev"])
+            test_paths = os.path.join(data_path, data_cfg["test"])
+            pad_feature_size = data_cfg["feature_size"]
+        embeddings_train_paths = None
+        embeddings_test_paths = None
+        embeddings_dev_paths = None
+        annotations_train_paths = None
+        annotations_test_paths = None
+        annotations_dev_paths = None
+
 
     level = data_cfg["level"]
     txt_lowercase = data_cfg["txt_lowercase"]
