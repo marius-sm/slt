@@ -299,8 +299,8 @@ def test(
 
     cfg = load_config(cfg_file)
 
-    if "test" not in cfg["data"].keys():
-        raise ValueError("Test data must be specified in config.")
+    # if "test" not in cfg["data"].keys():
+    #    raise ValueError("Test data must be specified in config.")
 
     # when checkpoint is not specified, take latest (best) from model dir
     if ckpt is None:
