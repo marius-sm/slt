@@ -49,17 +49,49 @@ def load_data(data_cfg: dict) -> (Dataset, Dataset, Dataset, Vocabulary, Vocabul
 
     data_path = data_cfg.get("data_path", "./data")
 
-    if isinstance(data_cfg["train"], list):
-        train_paths = [os.path.join(data_path, x) for x in data_cfg["train"]]
-        dev_paths = [os.path.join(data_path, x) for x in data_cfg["dev"]]
-        test_paths = [os.path.join(data_path, x) for x in data_cfg["test"]]
-        pad_feature_size = sum(data_cfg["feature_size"])
+    if "train" in data_cfg.keys():
+        if isinstance(data_cfg["train"], list):
+            train_paths = [os.path.join(data_path, x) for x in data_cfg["train"]]
+            dev_paths = [os.path.join(data_path, x) for x in data_cfg["dev"]]
+            test_paths = [os.path.join(data_path, x) for x in data_cfg["test"]]
+            pad_feature_size = sum(data_cfg["feature_size"])
 
+        else:
+            train_paths = os.path.join(data_path, data_cfg["train"])
+            dev_paths = os.path.join(data_path, data_cfg["dev"])
+            test_paths = os.path.join(data_path, data_cfg["test"])
+            pad_feature_size = data_cfg["feature_size"]
+        embeddings_train_paths = None
+        embeddings_test_paths = None
+        embeddings_dev_paths = None
+        annotations_train_paths = None
+        annotations_test_paths = None
+        annotations_dev_paths = None
     else:
-        train_paths = os.path.join(data_path, data_cfg["train"])
-        dev_paths = os.path.join(data_path, data_cfg["dev"])
-        test_paths = os.path.join(data_path, data_cfg["test"])
-        pad_feature_size = data_cfg["feature_size"]
+        assert "embeddings_train" in data_cfg.keys()
+        assert "annotations_train" in data_cfg.keys()
+        if isinstance(data_cfg["embeddings_train"], list):
+            embeddings_train_paths = [os.path.join(data_path, x) for x in data_cfg["embeddings_train"]]
+            embeddings_dev_paths = [os.path.join(data_path, x) for x in data_cfg["embeddings_dev"]]
+            embeddings_test_paths = [os.path.join(data_path, x) for x in data_cfg["embeddings_test"]]
+            annotations_train_paths = [os.path.join(data_path, x) for x in data_cfg["annotations_train"]]
+            annotations_dev_paths = [os.path.join(data_path, x) for x in data_cfg["annotations_dev"]]
+            annotations_test_paths = [os.path.join(data_path, x) for x in data_cfg["annotations_test"]]
+            pad_feature_size = sum(data_cfg["feature_size"])
+
+        else:
+            embeddings_train_paths = os.path.join(data_path, data_cfg["embeddings_train"])
+            embeddings_dev_paths = os.path.join(data_path, data_cfg["embeddings_dev"])
+            embeddings_test_paths = os.path.join(data_path, data_cfg["embeddings_test"])
+            annotations_train_paths = os.path.join(data_path, data_cfg["annotations_train"])
+            annotations_dev_paths = os.path.join(data_path, data_cfg["annotations_dev"])
+            annotations_test_paths = os.path.join(data_path, data_cfg["annotations_test"])
+            pad_feature_size = data_cfg["feature_size"]
+        train_paths = None
+        test_paths = None
+        dev_paths = None
+
+    print(embeddings_train_paths)
 
     level = data_cfg["level"]
     txt_lowercase = data_cfg["txt_lowercase"]
@@ -115,6 +147,8 @@ def load_data(data_cfg: dict) -> (Dataset, Dataset, Dataset, Vocabulary, Vocabul
 
     train_data = SignTranslationDataset(
         path=train_paths,
+        embeddings_path=embeddings_train_paths,
+        annotations_path=annotations_train_paths,
         fields=(sequence_field, signer_field, sgn_field, gls_field, txt_field),
         filter_pred=lambda x: len(vars(x)["sgn"]) <= max_sent_length
         and len(vars(x)["txt"]) <= max_sent_length,
@@ -153,6 +187,8 @@ def load_data(data_cfg: dict) -> (Dataset, Dataset, Dataset, Vocabulary, Vocabul
 
     dev_data = SignTranslationDataset(
         path=dev_paths,
+        embeddings_path=embeddings_dev_paths,
+        annotations_path=annotations_dev_paths,
         fields=(sequence_field, signer_field, sgn_field, gls_field, txt_field),
     )
     random_dev_subset = data_cfg.get("random_dev_subset", -1)
@@ -167,6 +203,8 @@ def load_data(data_cfg: dict) -> (Dataset, Dataset, Dataset, Vocabulary, Vocabul
     # check if target exists
     test_data = SignTranslationDataset(
         path=test_paths,
+        embeddings_path=embeddings_test_paths,
+        annotations_path=annotations_test_paths,
         fields=(sequence_field, signer_field, sgn_field, gls_field, txt_field),
     )
 

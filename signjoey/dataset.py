@@ -11,9 +11,25 @@ import torch
 
 
 def load_dataset_file(filename):
-    with gzip.open(filename, "rb") as f:
+
+    is_gzip = False
+
+    with open(filename, 'rb') as f:
+        if f.read(2) == b'\x1f\x8b':
+            is_gzip = True
+
+    with open(filename, 'rb') as f:
+        if is_gzip:
+            loaded_object = pickle.load(gzip.open(f))
+            return loaded_object
+        else:
+            loaded_object = pickle.load(f)
+            return loaded_object
+
+    with gzip.open(filename, 'rb') as f:
         loaded_object = pickle.load(f)
         return loaded_object
+    
 
 
 class SignTranslationDataset(data.Dataset):
@@ -25,8 +41,10 @@ class SignTranslationDataset(data.Dataset):
 
     def __init__(
         self,
-        path: str,
         fields: Tuple[RawField, RawField, Field, Field, Field],
+        path: str = None,
+        embeddings_path: str = None,
+        annotations_path: str = None,
         **kwargs
     ):
         """Create a SignTranslationDataset given paths and fields.
@@ -48,30 +66,62 @@ class SignTranslationDataset(data.Dataset):
                 ("txt", fields[4]),
             ]
 
-        if not isinstance(path, list):
-            path = [path]
+        if path is not None:
+            iterator = [path] if not isinstance(path, list) else path
+        else:
+            assert embeddings_path is not None
+            assert annotations_path is not None
+            embeddings_path = [embeddings_path] if not isinstance(embeddings_path, list) else embeddings_path
+            annotations_path = [annotations_path] if not isinstance(annotations_path, list) else annotations_path
+            iterator = zip(embeddings_path, annotations_path)
 
         samples = {}
-        for annotation_file in path:
-            tmp = load_dataset_file(annotation_file)
-            for s in tmp:
-                seq_id = s["name"]
-                if seq_id in samples:
-                    assert samples[seq_id]["name"] == s["name"]
-                    assert samples[seq_id]["signer"] == s["signer"]
-                    assert samples[seq_id]["gloss"] == s["gloss"]
-                    assert samples[seq_id]["text"] == s["text"]
-                    samples[seq_id]["sign"] = torch.cat(
-                        [samples[seq_id]["sign"], s["sign"]], axis=1
-                    )
-                else:
+        for obj in iterator:
+            if isinstance(obj, tuple):
+                embeddings = load_dataset_file(obj[0])
+                annotations = load_dataset_file(obj[1])
+                for s in embeddings:
+                    seq_id = s["name"]
+                    if seq_id in samples:
+                        assert samples[seq_id]["name"] == s["name"]
+                        samples[seq_id]["sign"] = torch.cat(
+                            [samples[seq_id]["sign"], s["sign"]], axis=1
+                        )
+                    else:
+                        samples[seq_id] = {
+                            "name": s["name"],
+                            "sign": s["sign"],
+                        }
+                for s in annotations:
+                    seq_id = s["name"]
                     samples[seq_id] = {
                         "name": s["name"],
                         "signer": s["signer"],
                         "gloss": s["gloss"],
                         "text": s["text"],
-                        "sign": s["sign"],
+                        "sign": samples[seq_id]["sign"]
                     }
+
+            else:
+                tmp = load_dataset_file(obj)
+                for s in tmp:
+                    seq_id = s["name"]
+                    if seq_id in samples:
+                        assert samples[seq_id]["name"] == s["name"]
+                        assert samples[seq_id]["signer"] == s["signer"]
+                        assert samples[seq_id]["gloss"] == s["gloss"]
+                        assert samples[seq_id]["text"] == s["text"]
+                        samples[seq_id]["sign"] = torch.cat(
+                            [samples[seq_id]["sign"], s["sign"]], axis=1
+                        )
+                    else:
+                        samples[seq_id] = {
+                            "name": s["name"],
+                            "signer": s["signer"],
+                            "gloss": s["gloss"],
+                            "text": s["text"],
+                            "sign": s["sign"],
+                        }
 
         examples = []
         for s in samples:
