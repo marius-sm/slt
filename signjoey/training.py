@@ -975,13 +975,13 @@ def train(cfg_file: str, cfg_dict: dict=None) -> None:
     """
     cfg = load_config(cfg_file)
 
-    def update_dict(d, u):
-        for k, v in u.items():
-            if isinstance(v, collections.abc.Mapping):
-                d[k] = update_dict(d.get(k, {}), v)
+    def update_dict(dictionary, updates):
+        for key, value in updates.items():
+            if isinstance(value, collections.abc.Mapping):
+                dictionary[key] = update_dict(dictionary.get(key, {}), value)
             else:
-                d[k] = v
-        return d
+                dictionary[key] = value
+        return dictionary
 
     if cfg_dict is not None:
         cfg = update_dict(cfg, cfg_dict)
