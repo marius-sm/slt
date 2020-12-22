@@ -35,6 +35,8 @@ from torch.utils.tensorboard import SummaryWriter
 from torchtext.data import Dataset
 from typing import List, Dict
 
+import collections.abc
+
 
 # pylint: disable=too-many-instance-attributes
 class TrainManager:
@@ -964,17 +966,27 @@ class TrainManager:
             for seq, hyp in zip(sequence_ids, hypotheses):
                 opened_file.write("{}|{}\n".format(seq, hyp))
 
+def update_dict(d, u):
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
 
-def train(cfg_file: str, model_dir: str=None) -> None:
+def train(cfg_file: str, cfg_dict: dict=None) -> None:
     """
     Main training function. After training, also test on test data if given.
 
     :param cfg_file: path to configuration yaml file
+    :param cfg_dict: path to configuration dict, overrides values in cfg_file
     """
     cfg = load_config(cfg_file)
 
-    if model_dir is not None:
-        cfg["training"]["model_dir"] = model_dir
+    if cfg_dict is not None:
+        cfg = update_dict(cfg, cfg_dict)
+
+    assert not os.path.isdir(cfg["training"]["model_dir"]), "model_dir already exists"
 
     # set the random seed
     set_seed(seed=cfg["training"].get("random_seed", 42))
@@ -1049,9 +1061,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--gpu_id", type=str, default="0", help="gpu to run your job on"
     )
-    parser.add_argument(
-        "--model_dir", type=str, default="./sign_sample_model", help="where to save model and logs - overrides config"
-    )
     args = parser.parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
-    train(cfg_file=args.config, model_dir=args.model_dir)
+    train(cfg_file=args.config, cfg_dict=None)
